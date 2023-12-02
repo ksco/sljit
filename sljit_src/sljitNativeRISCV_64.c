@@ -53,6 +53,7 @@ static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 ds
 		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)hi20));
 	}
 	if (lo12 != 0 || hi20 == 0) {
+		src_r = hi20 != 0 ? dst_r : 0;
 		FAIL_IF(push_inst(compiler, ADDIW | RD(dst_r) | RS1(src_r) | IMM_I(lo12)));
 	}
 	return SLJIT_SUCCESS;
