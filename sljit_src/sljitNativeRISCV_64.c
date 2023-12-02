@@ -70,7 +70,7 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 	}
 
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
-	load_immediate(compiler, dst_r, imm);
+	load_immediate(compiler, dst_r, hi52);
 	FAIL_IF(push_inst(compiler, SLLI | RD(dst_r) | RS1(dst_r) | IMM_I(shift)));
 	if (lo12) {
 		FAIL_IF(push_inst(compiler, ADDI | RD(dst_r) | RS1(dst_r) | IMM_I(lo12)));
