@@ -49,7 +49,7 @@ static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 ds
     sljit_s32 lo12 = imm & 0xfff;
 	sljit_s32 src_r = 0;
 	if (hi20 != 0) {
-		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | hi20));
+		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)hi20));
 	}
 	if (lo12 != 0 || hi20 == 0) {
 		FAIL_IF(push_inst(compiler, ADDIW | RD(dst_r) | RS1(src_r) | IMM_I(lo12));
@@ -69,9 +69,9 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 	sljit_s32 shift = 12 + trailing_zeros_64((uint64)hi52);
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
 	load_immediate(compiler, dst_r, imm);
-	FAIL_IF(push_inst(compiler, SLLI | RD(dst_r) | RS1(dst_r) | shift));
+	FAIL_IF(push_inst(compiler, SLLI | RD(dst_r) | RS1(dst_r) | IMM_I(shift)));
 	if (lo12) {
-		FAIL_IF(push_inst(compiler, ADDI | RD(dst_r) | RS1(dst_r) | lo12));
+		FAIL_IF(push_inst(compiler, ADDI | RD(dst_r) | RS1(dst_r) | IMM_I(lo12)));
 	}
 	return SLJIT_SUCCESS;
 }
