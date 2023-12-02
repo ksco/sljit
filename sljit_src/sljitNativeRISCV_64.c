@@ -26,31 +26,31 @@
 
 static int trailing_zeros_64(sljit_uw x)
 {
-    /* See http://supertech.csail.mit.edu/papers/debruijn.pdf */
-    static const sljit_u8 debruijn64tab[64] = {
-        0,  1,  56, 2,  57, 49, 28, 3,  61, 58, 42, 50, 38, 29, 17, 4,
-        62, 47, 59, 36, 45, 43, 51, 22, 53, 39, 33, 30, 24, 18, 12, 5,
-        63, 55, 48, 27, 60, 41, 37, 16, 46, 35, 44, 21, 52, 32, 23, 11,
-        54, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6,
-    };
+	/* See http://supertech.csail.mit.edu/papers/debruijn.pdf */
+	static const sljit_u8 debruijn64tab[64] = {
+		0,  1,  56, 2,  57, 49, 28, 3,  61, 58, 42, 50, 38, 29, 17, 4,
+		62, 47, 59, 36, 45, 43, 51, 22, 53, 39, 33, 30, 24, 18, 12, 5,
+		63, 55, 48, 27, 60, 41, 37, 16, 46, 35, 44, 21, 52, 32, 23, 11,
+		54, 26, 40, 15, 34, 20, 31, 10, 25, 14, 19, 9,  13, 8,  7,  6,
+	};
 
-    static const sljit_uw debruijn64 = 0x03f79d71b4ca8b09ULL;
-    if (x == 0) {
-        return 64;
-    }
+	static const sljit_uw debruijn64 = 0x03f79d71b4ca8b09ULL;
+	if (x == 0) {
+		return 64;
+	}
 
-    return (int)debruijn64tab[(x & -x) * debruijn64 >> (64 - 6)];
+	return (int)debruijn64tab[(x & -x) * debruijn64 >> (64 - 6)];
 }
 
-static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 dst_r, sljit_sw imm)
+static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 dst_r, sljit_s32 imm)
 {
 	/* Add 0x800 to cancel out the signed extension of ADDIW. */
-    sljit_s32 hi20 = (imm + 0x800) >> 12 & 0xfffff;
-    sljit_s32 lo12 = imm & 0xfff;
+	sljit_s32 hi20 = (imm + 0x800) >> 12 & 0xfffff;
+	sljit_s32 lo12 = imm & 0xfff;
 	sljit_s32 src_r = 0;
 
 	if (hi20 != 0) {
-		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)hi20));
+		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)(hi20 << 12)));
 	}
 	if (lo12 != 0 || hi20 == 0) {
 		src_r = hi20 != 0 ? dst_r : 0;
@@ -65,7 +65,7 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 	sljit_s32 shift;
 
 	if (((imm << 32) >> 32) == imm) {
-		return load_immediate_32(compiler, dst_r, imm);
+		return load_immediate_32(compiler, dst_r, (sljit_s32)imm);
 	}
 
 	lo12 = (imm << 52) >> 52;
