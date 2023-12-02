@@ -991,11 +991,11 @@ static sljit_s32 getput_arg(struct sljit_compiler *compiler, sljit_s32 flags, sl
 		argw_hi = TO_ARGW_HI(argw);
 
 		if (next_arg && next_argw - argw <= SIMM_MAX && next_argw - argw >= SIMM_MIN && argw_hi != TO_ARGW_HI(next_argw)) {
-			FAIL_IF(load_immediate(compiler, TMP_REG3, argw, tmp_r));
+			FAIL_IF(load_immediate(compiler, TMP_REG3, argw, TMP_REG1));
 			compiler->cache_argw = argw;
 			offset = 0;
 		} else {
-			FAIL_IF(load_immediate(compiler, TMP_REG3, argw_hi, tmp_r));
+			FAIL_IF(load_immediate(compiler, TMP_REG3, argw_hi, TMP_REG1));
 			compiler->cache_argw = argw_hi;
 			offset = argw & 0xfff;
 			argw = argw_hi;
