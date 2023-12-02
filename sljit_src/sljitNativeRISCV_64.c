@@ -63,9 +63,9 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 		return load_immediate_32(compiler, dst_r, imm);
 	}
 
-	sljit_uw lo12 = (val << 52) >> 52;
+	sljit_uw lo12 = (imm << 52) >> 52;
 	/* Add 0x800 to cancel out the signed extension of ADDI. */
-	sljit_uw hi52 = (val + 0x800) >> 12;
+	sljit_uw hi52 = (imm + 0x800) >> 12;
 	sljit_s32 shift = 12 + trailing_zeros_64((uint64)hi52);
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
 	load_immediate(compiler, dst_r, imm);
