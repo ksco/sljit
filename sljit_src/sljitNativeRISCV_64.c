@@ -48,6 +48,7 @@ static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 ds
     sljit_s32 hi20 = (imm + 0x800) >> 12 & 0xfffff;
     sljit_s32 lo12 = imm & 0xfff;
 	sljit_s32 src_r = 0;
+
 	if (hi20 != 0) {
 		FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)hi20));
 	}
@@ -59,13 +60,14 @@ static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 ds
 
 static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r, sljit_sw imm)
 {
+	sljit_sw lo12 = (imm << 52) >> 52;
+	/* Add 0x800 to cancel out the signed extension of ADDI. */
+	sljit_sw hi52 = (imm + 0x800) >> 12;
+
 	if (((imm << 32) >> 32) == imm) {
 		return load_immediate_32(compiler, dst_r, imm);
 	}
 
-	sljit_sw lo12 = (imm << 52) >> 52;
-	/* Add 0x800 to cancel out the signed extension of ADDI. */
-	sljit_sw hi52 = (imm + 0x800) >> 12;
 	sljit_s32 shift = 12 + trailing_zeros_64((sljit_uw)hi52);
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
 	load_immediate(compiler, dst_r, imm);
