@@ -79,6 +79,7 @@ static const sljit_u8 freg_map[SLJIT_NUMBER_OF_FLOAT_REGISTERS + 3] = {
 
 #define ADD		(F7(0x0) | F3(0x0) | OPC(0x33))
 #define ADDI		(F3(0x0) | OPC(0x13))
+#define ADDIW		(F3(0x0) | OPC(0x1b))
 #define AND		(F7(0x0) | F3(0x7) | OPC(0x33))
 #define ANDI		(F3(0x7) | OPC(0x13))
 #define AUIPC		(OPC(0x17))
