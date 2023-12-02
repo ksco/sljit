@@ -56,9 +56,9 @@ SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_emit_fset64(struct sljit_compiler *comp
 	u.value = value;
 
 	if (u.imm[0] != 0)
-		FAIL_IF(load_immediate(compiler, TMP_REG1, u.imm[0], TMP_REG3));
+		FAIL_IF(load_immediate(compiler, TMP_REG1, u.imm[0]));
 	if (u.imm[1] != 0)
-		FAIL_IF(load_immediate(compiler, TMP_REG2, u.imm[1], TMP_REG3));
+		FAIL_IF(load_immediate(compiler, TMP_REG2, u.imm[1]));
 
 	FAIL_IF(push_inst(compiler, ADDI | RD(SLJIT_SP) | RS1(SLJIT_SP) | IMM_I(-16)));
 	FAIL_IF(push_inst(compiler, SW | RS1(SLJIT_SP) | RS2(u.imm[0] != 0 ? TMP_REG1 : TMP_ZERO) | (8 << 7)));

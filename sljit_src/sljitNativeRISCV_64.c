@@ -66,7 +66,7 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 	sljit_sw lo12 = (imm << 52) >> 52;
 	/* Add 0x800 to cancel out the signed extension of ADDI. */
 	sljit_sw hi52 = (imm + 0x800) >> 12;
-	sljit_s32 shift = 12 + trailing_zeros_64((uint64)hi52);
+	sljit_s32 shift = 12 + trailing_zeros_64((sljit_uw)hi52);
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
 	load_immediate(compiler, dst_r, imm);
 	FAIL_IF(push_inst(compiler, SLLI | RD(dst_r) | RS1(dst_r) | IMM_I(shift)));
@@ -92,7 +92,7 @@ SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_emit_fset64(struct sljit_compiler *comp
 	if (u.imm == 0)
 		return push_inst(compiler, FMV_W_X | (1 << 25) | RS1(TMP_ZERO) | FRD(freg));
 
-	FAIL_IF(load_immediate(compiler, TMP_REG1, u.imm, TMP_REG3));
+	FAIL_IF(load_immediate(compiler, TMP_REG1, u.imm));
 	return push_inst(compiler, FMV_W_X | (1 << 25) | RS1(TMP_REG1) | FRD(freg));
 }
 
