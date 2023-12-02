@@ -26,7 +26,7 @@
 
 static int trailing_zeros_64(sljit_uw x)
 {
-    // See http://supertech.csail.mit.edu/papers/debruijn.pdf
+    /* See http://supertech.csail.mit.edu/papers/debruijn.pdf */
     static const sljit_u8 debruijn64tab[64] = {
         0,  1,  56, 2,  57, 49, 28, 3,  61, 58, 42, 50, 38, 29, 17, 4,
         62, 47, 59, 36, 45, 43, 51, 22, 53, 39, 33, 30, 24, 18, 12, 5,
@@ -61,15 +61,17 @@ static sljit_s32 load_immediate_32(struct sljit_compiler *compiler, sljit_s32 ds
 
 static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r, sljit_sw imm)
 {
-	sljit_sw lo12 = (imm << 52) >> 52;
-	/* Add 0x800 to cancel out the signed extension of ADDI. */
-	sljit_sw hi52 = (imm + 0x800) >> 12;
-	sljit_s32 shift = 12 + trailing_zeros_64((sljit_uw)hi52);
+	sljit_sw lo12, hi52;
+	sljit_s32 shift;
 
 	if (((imm << 32) >> 32) == imm) {
 		return load_immediate_32(compiler, dst_r, imm);
 	}
 
+	lo12 = (imm << 52) >> 52;
+	/* Add 0x800 to cancel out the signed extension of ADDI. */
+	hi52 = (imm + 0x800) >> 12;
+	shift = 12 + trailing_zeros_64((sljit_uw)hi52);
 	hi52 = ((hi52 >> (shift - 12)) << shift) >> shift;
 	load_immediate(compiler, dst_r, hi52);
 	FAIL_IF(push_inst(compiler, SLLI | RD(dst_r) | RS1(dst_r) | IMM_I(shift)));
